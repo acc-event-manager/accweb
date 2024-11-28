@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
-	"github.com/acc-event-manager/accweb/internal/pkg/server_manager"
+	"github.com/acc-event-manager/accweb/api/pkg/cfg"
+	"github.com/acc-event-manager/accweb/api/pkg/server_manager"
 	"github.com/acc-event-manager/accweb/public"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"

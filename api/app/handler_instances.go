@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/acc-event-manager/accweb/internal/pkg/instance"
-	"github.com/acc-event-manager/accweb/internal/pkg/server_manager"
+	"github.com/acc-event-manager/accweb/api/pkg/instance"
+	"github.com/acc-event-manager/accweb/api/pkg/server_manager"
 	"github.com/gin-gonic/gin"
 )
 

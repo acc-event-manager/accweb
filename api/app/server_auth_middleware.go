@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
+	"github.com/acc-event-manager/accweb/api/pkg/cfg"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/acc-event-manager/accweb/internal/app"
-	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
-	"github.com/acc-event-manager/accweb/internal/pkg/helper"
-	"github.com/acc-event-manager/accweb/internal/pkg/server_manager"
+	"github.com/acc-event-manager/accweb/api/app"
+	"github.com/acc-event-manager/accweb/api/pkg/cfg"
+	"github.com/acc-event-manager/accweb/api/pkg/helper"
+	"github.com/acc-event-manager/accweb/api/pkg/server_manager"
 	"github.com/sirupsen/logrus"
 )
 
