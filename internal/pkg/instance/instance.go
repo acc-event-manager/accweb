@@ -20,8 +20,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/assetto-corsa-web/accweb/internal/pkg/cfg"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/helper"
+	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
+	"github.com/acc-event-manager/accweb/internal/pkg/helper"
 )
 
 const (

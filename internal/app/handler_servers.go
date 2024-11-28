@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"runtime"
 
-	"github.com/assetto-corsa-web/accweb/internal/pkg/instance"
+	"github.com/acc-event-manager/accweb/internal/pkg/instance"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/assetto-corsa-web/accweb/internal/app"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/cfg"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/helper"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/server_manager"
+	"github.com/acc-event-manager/accweb/internal/app"
+	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
+	"github.com/acc-event-manager/accweb/internal/pkg/helper"
+	"github.com/acc-event-manager/accweb/internal/pkg/server_manager"
 	"github.com/sirupsen/logrus"
 )
 

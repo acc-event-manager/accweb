@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/assetto-corsa-web/accweb/internal/pkg/helper"
+	"github.com/acc-event-manager/accweb/internal/pkg/helper"
 )
 
 var DefaultCoreAffinity = uint(math.Pow(2, float64(runtime.NumCPU()))) - 1

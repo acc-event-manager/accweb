@@ -11,8 +11,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/assetto-corsa-web/accweb/internal/pkg/helper"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/instance"
+	"github.com/acc-event-manager/accweb/internal/pkg/helper"
+	"github.com/acc-event-manager/accweb/internal/pkg/instance"
 )
 
 var (

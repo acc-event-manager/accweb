@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/acc-event-manager/accweb/internal/pkg/cfg"
+	"github.com/acc-event-manager/accweb/internal/pkg/server_manager"
+	"github.com/acc-event-manager/accweb/public"
 	jwt "github.com/appleboy/gin-jwt/v2"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/cfg"
-	"github.com/assetto-corsa-web/accweb/internal/pkg/server_manager"
-	"github.com/assetto-corsa-web/accweb/public"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -23,10 +23,10 @@ import (
 // @version         1.19
 
 // @contact.name   ACCWeb project
-// @contact.url    https://github.com/assetto-corsa-web/accweb
+// @contact.url    https://github.com/acc-event-manager/accweb
 
 // @license.name  MIT
-// @license.url   https://github.com/assetto-corsa-web/accweb/blob/master/LICENSE
+// @license.url   https://github.com/acc-event-manager/accweb/blob/master/LICENSE
 
 // @host      localhost:8080
 // @BasePath  /api

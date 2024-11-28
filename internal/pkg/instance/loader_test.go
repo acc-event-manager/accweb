@@ -5,7 +5,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/assetto-corsa-web/accweb/internal/pkg/helper"
+	"github.com/acc-event-manager/accweb/internal/pkg/helper"
 
 	"github.com/stretchr/testify/assert"
 )
