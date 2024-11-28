@@ -20,7 +20,7 @@ COPY . /accweb_src
 RUN sh build/build_release.sh ${VERSION}
 RUN cd /accweb_src/releases && unzip accweb_${VERSION}.zip && mv accweb_${VERSION} /accweb
 
-FROM alpine:3.18
+FROM alpine:3.20
 
 LABEL description="Assetto Corsa Competizione Server Management Tool via Web Interface."
 
@@ -34,6 +34,8 @@ COPY --from=builder /accweb/accweb /accweb/accweb
 COPY --from=builder /accweb_src/build/docker/* /accweb/
 
 ENV ACCWEB_HOST=0.0.0.0:8080 \
+    ACCWEB_INTERNAL_HOST=0.0.0.0:8090 \
+	ACCWEB_STATIC_TOKEN=m2mToken \
 	ACCWEB_ENABLE_TLS=false \
 	ACCWEB_CERT_FILE=/sslcerts/certificate.crt \
 	ACCWEB_PRIV_FILE=/sslcerts/private.key \

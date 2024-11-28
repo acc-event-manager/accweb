@@ -1,7 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -64,6 +68,10 @@ func (f *myFS) Open(name string) (http.File, error) {
 func StartServer(config *cfg.Config, sM *server_manager.Service) {
 	var r *gin.Engine
 
+	// Channel for handling server shutdown
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
+
 	if !config.Dev {
 		gin.SetMode(gin.ReleaseMode)
 		r = gin.New()
@@ -73,28 +81,96 @@ func StartServer(config *cfg.Config, sM *server_manager.Service) {
 		r = gin.Default()
 	}
 
+	// Internal router
+	internalEngine := gin.Default()
+
 	// setup CORS
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{config.CORS.Origins}
 	r.Use(cors.New(corsConfig))
 
+	// Internal router
+	internalEngine.Use(cors.New(corsConfig))
+
 	r.NoRoute(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/")
 	})
 
-	// setup routers
-	setupRouters(r, sM, config)
+	// Internal router
+	internalEngine.NoRoute(func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/")
+	})
 
-	// Starting HTTP Server
-	if config.Webserver.TLS {
-		if err := r.RunTLS(config.Webserver.Host, config.Webserver.Cert, config.Webserver.PrivateKey); err != nil {
-			logrus.WithError(err).Fatal("failed to start http server with TLS")
+	// Start the first HTTP server (main server)
+	mainServer := &http.Server{
+		Addr:    config.Webserver.Host,
+		Handler: r,
+	}
+
+	go func() {
+		// setup routers
+		setupRouters(r, sM, config)
+
+		// Starting HTTP Server
+		if config.Webserver.TLS {
+			if err := r.RunTLS(config.Webserver.Host, config.Webserver.Cert, config.Webserver.PrivateKey); err != nil {
+				logrus.WithError(err).Fatal("failed to start http server with TLS")
+			}
+		} else {
+			if err := r.Run(config.Webserver.Host); err != nil {
+				logrus.WithError(err).Fatal("failed to start http server")
+			}
 		}
-	} else {
-		if err := r.Run(config.Webserver.Host); err != nil {
+	}()
+
+	// Start the second HTTP server (internal server)
+	internalServer := &http.Server{
+		Addr:    config.Webserver.InternalHost,
+		Handler: internalEngine,
+	}
+
+	go func() {
+		// Internal router
+		setupInternalRouters(internalEngine, sM, config)
+
+		// Start HTTP server for M2M
+		if err := internalEngine.Run(config.Webserver.InternalHost); err != nil {
 			logrus.WithError(err).Fatal("failed to start http server")
 		}
+	}()
+
+	// Wait for termination signal
+	sigReceived := <-shutdown
+	logrus.Infof("Received termination signal: %v", sigReceived)
+
+	// Gracefully shut down the servers
+	shutdownServers(mainServer, internalServer)
+}
+
+func setupInternalRouters(r *gin.Engine, sM *server_manager.Service, config *cfg.Config) {
+	h := Handler{sm: sM}
+
+	api := r.Group("/api")
+
+	authHandler := &StaticAuthHandler{
+		Config: config,
 	}
+
+	api.Use(authHandler.AuthenticateM2M())
+
+	api.GET("/servers", h.ListServers)
+	api.GET("/metadata", h.Metadata)
+	api.GET("/instance/:id", h.GetInstance)
+	api.GET("/instance/:id/logs", h.GetInstanceLogs)
+	api.GET("/instance/:id/live", h.GetInstanceLiveState)
+	api.GET("/instance/:id/export", h.ExportInstance)
+	api.POST("/servers/stop-all", h.StopAllServers)
+	api.POST("/instance/:id/start", h.StartInstance)
+	api.POST("/instance/:id/stop", h.StopInstance)
+	api.POST("/instance", h.NewInstance)
+	api.POST("/instance/:id", h.SaveInstance)
+	api.DELETE("/instance/:id", h.DeleteInstance)
+	api.POST("/instance/:id/clone", h.CloneInstance)
 }
 
 func setupRouters(r *gin.Engine, sM *server_manager.Service, config *cfg.Config) {
@@ -279,4 +355,26 @@ func GetUserFromClaims(c *gin.Context) *User {
 			ReadOnly: claims["read_only"].(bool),
 		}
 	}
+}
+
+func shutdownServers(mainServer *http.Server, internalServer *http.Server) {
+	logrus.Info("Shutting down servers...")
+
+	// Graceful shutdown for the main server
+	go func() {
+		if err := mainServer.Shutdown(nil); err != nil {
+			logrus.WithError(err).Fatal("Error shutting down main server")
+		}
+	}()
+
+	// Graceful shutdown for the internal server
+	go func() {
+		if err := internalServer.Shutdown(nil); err != nil {
+			logrus.WithError(err).Fatal("Error shutting down internal server")
+		}
+	}()
+
+	// Wait for shutdown completion
+	time.Sleep(2 * time.Second)
+	fmt.Println("Servers gracefully shutdown.")
 }

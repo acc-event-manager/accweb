@@ -1,18 +1,24 @@
-FROM golang:1.21-bullseye
+FROM golang:1.23-bullseye
 
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt update && \
+    apt install -y sudo git make curl gnupg iputils-ping dnsutils build-essential nodejs="16.*" zip && \
+    echo 'alias ll="ls -lsah"' >> ~/.bashrc && \
+    go install golang.org/x/tools/gopls@latest && \
+    # Base Go tools needed for VS code Go extension
+    go install golang.org/x/tools/cmd/guru@latest && \
+    go install golang.org/x/tools/cmd/gorename@latest && \
+    go install github.com/go-delve/delve/cmd/dlv@latest && \
+    # Extra tools integrating with VS code
+    go install github.com/fatih/gomodifytags@latest && \
+    go install github.com/cweill/gotests/...@latest &&\
+    go install github.com/davidrjenni/reftools/cmd/fillstruct@latest && \
+    # Terminal tools
+    go install github.com/golang/mock/mockgen@latest && \
+    go install github.com/vektra/mockery/v2/...@latest && \
+    2>&1 && \
+    rm -rf $GOPATH/pkg/* $GOPATH/src/* /root/.cache/go-build && \
+    export PATH="$PATH:$(go env GOPATH)/bin"
 
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get install -y git build-essential nodejs="16.*" zip
-
-RUN go install golang.org/x/tools/gopls@latest \
-    && go install github.com/go-delve/delve/cmd/dlv@latest \
-    && go install honnef.co/go/tools/cmd/staticcheck@latest \
-    && curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.2
-
-RUN mkdir -p /app && cd /app && git clone https://github.com/assetto-corsa-web/fake-accserver.git
-
-RUN cd /app/fake-accserver/logs \
-    && wget -q https://gist.github.com/pedrofaria/ab057054e31eb5c7960a79fe3116c3d9/raw/e42339008b0ddb17989cd5e0d2c76e0e0041521c/logs_20220315_201400_1636636807.log \
-    && cd /app/fake-accserver && make build-for-osx
 

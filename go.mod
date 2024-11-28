@@ -1,4 +1,4 @@
-module github.com/assetto-corsa-web/accweb
+module github.com/acc-event-manager/accweb
 
 go 1.21
 

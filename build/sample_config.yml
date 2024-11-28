@@ -8,6 +8,10 @@ webserver:
   # 0.0.0.0 exposes accweb on the internet.
   host: 0.0.0.0:80
 
+  # Internal host is use to expose the API routes with another port for static auth with a static token
+  # thiw will be used for M2M communication
+  internal_host: 0.0.0.0:8090
+
   # Set tls to true and provide paths to the key files in order to enable SSL.
   # This is highly recommended as otherwise your passwords and all other traffic won't be encrypted!
   # accweb will probably support automatic Letsencrypt certificates in the future.
@@ -39,6 +43,9 @@ auth:
   #
   # public_key_path: secrets/token.public
   # private_key_path: secrets/token.private
+
+  # Static token is the token that will be used for M2M communication
+  static_token: "m2mToken"
 
 acc:
   # Path to ACC server installation directory.

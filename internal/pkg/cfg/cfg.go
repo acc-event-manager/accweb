@@ -29,10 +29,11 @@ type Config struct {
 }
 
 type Webserver struct {
-	Host       string `yaml:"host"`
-	TLS        bool   `yaml:"tls"`
-	Cert       string `yaml:"cert"`
-	PrivateKey string `yaml:"private_key"`
+	Host         string `yaml:"host"`
+	InternalHost string `yaml:"internal_host"`
+	TLS          bool   `yaml:"tls"`
+	Cert         string `yaml:"cert"`
+	PrivateKey   string `yaml:"private_key"`
 }
 
 type CORS struct {
@@ -47,6 +48,7 @@ type Auth struct {
 	ModeratorPassword string         `yaml:"moderator_password"`
 	ReadOnlyPassword  string         `yaml:"read_only_password"`
 	Timeout           *time.Duration `yaml:"timeout"`
+	StaticToken       string         `yaml:"static_token"`
 }
 
 type ACC struct {

@@ -3,6 +3,7 @@
 
 webserver:
   host: $ACCWEB_HOST
+  internal_host: $ACCWEB_INTERNAL_HOST
   tls: $ACCWEB_ENABLE_TLS
   cert: $ACCWEB_CERT_FILE
   private_key: $ACCWEB_PRIV_FILE
@@ -15,6 +16,7 @@ auth:
   admin_password: $ACCWEB_ADMIN_PASSWORD
   moderator_password: $ACCWEB_MOD_PASSWORD
   read_only_password: $ACCWEB_RO_PASSWORD
+  static_token: "$ACCWEB_STATIC_TOKEN"
 
 acc:
   server_path: "/accserver"
