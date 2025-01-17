@@ -20,15 +20,17 @@ COPY . /accweb_src
 RUN sh build/build_release.sh ${VERSION}
 RUN cd /accweb_src/releases && unzip accweb_${VERSION}.zip && mv accweb_${VERSION} /accweb
 
-FROM alpine:3.20
+
+
+
+FROM alpine:3.21
 
 LABEL description="Assetto Corsa Competizione Server Management Tool via Web Interface."
 
 ARG VERSION=noversion
 
-RUN apk add --no-cache gettext wine ca-certificates
-
-RUN mkdir /accserver && mkdir /accweb
+RUN apk add --no-cache gettext wine ca-certificates && \
+	mkdir /accserver && mkdir /accweb
 
 COPY --from=builder /accweb/accweb /accweb/accweb
 COPY --from=builder /accweb_src/build/docker/* /accweb/

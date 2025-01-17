@@ -171,6 +171,8 @@ func setupInternalRouters(r *gin.Engine, sM *server_manager.Service, config *cfg
 	api.POST("/instance/:id", h.SaveInstance)
 	api.DELETE("/instance/:id", h.DeleteInstance)
 	api.POST("/instance/:id/clone", h.CloneInstance)
+	api.GET("/instance/:id/result-file-list", h.GetInstanceResultFileList)
+	api.GET("/instance/:id/result-file/:name", h.GetInstanceResultFile)
 }
 
 func setupRouters(r *gin.Engine, sM *server_manager.Service, config *cfg.Config) {

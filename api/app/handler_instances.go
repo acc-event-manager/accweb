@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/acc-event-manager/accweb/api/pkg/instance"
 	"github.com/acc-event-manager/accweb/api/pkg/server_manager"
@@ -35,6 +36,11 @@ type SaveInstancePayload struct {
 	AccWeb           instance.AccWebSettingsJson `json:"accWeb"`
 	Acc              instance.AccConfigFiles     `json:"acc"`
 	AccExtraSettings ExtraAccSettings            `json:"accExtraSettings"`
+}
+
+type InstaceResultFile struct {
+	Name string `json:"name"`
+	Size int64  `json:"size"`
 }
 
 func NewInstancePayload(srv *instance.Instance) InstancePayload {
@@ -393,4 +399,59 @@ func (h *Handler) GetInstanceLiveState(c *gin.Context) {
 		ListServerItem: buildListServerItem(srv),
 		Live:           srv.Live,
 	})
+}
+
+func (h *Handler) GetInstanceResultFileList(c *gin.Context) {
+	id := c.Param("id")
+
+	srv, err := h.sm.GetServerByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	resultPath := fmt.Sprintf("%s/%s", srv.Path, "results")
+
+	files, err := os.ReadDir(resultPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, newAccWError(err.Error()))
+		return
+	}
+
+	resultFiles := []InstaceResultFile{}
+	for _, f := range files {
+		var fileSize int64 = 0
+		fileInfo, err := f.Info()
+		if err == nil {
+			fileSize = fileInfo.Size()
+		}
+		rf := InstaceResultFile{
+			Name: f.Name(),
+			Size: fileSize,
+		}
+		resultFiles = append(resultFiles, rf)
+	}
+
+	c.JSON(http.StatusOK, resultFiles)
+}
+
+func (h *Handler) GetInstanceResultFile(c *gin.Context) {
+	id := c.Param("id")
+	fileName := c.Param("name")
+
+	srv, err := h.sm.GetServerByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	resultPath := fmt.Sprintf("%s/%s/%s", srv.Path, "results", fileName)
+
+	resultContent, err := os.ReadFile(resultPath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, newAccWError(err.Error()))
+		return
+	}
+
+	c.Data(http.StatusOK, "application/json", resultContent)
 }
